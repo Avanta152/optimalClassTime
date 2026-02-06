@@ -14,6 +14,7 @@ void insertName(ListNode*& head, string& student) {
     listNode->next = head;
     head = listNode;
 }
+
 void printList(ListNode* head) {
     ListNode* ptr = head;
     while (ptr) {
@@ -21,12 +22,60 @@ void printList(ListNode* head) {
         ptr = ptr->next;
     }
 }
+struct TimeNode {
+    double time;
+    int count;
+    ListNode*nameList;
+    TimeNode* next;
+};
+TimeNode* insertTime(TimeNode*& head, double t, string& name) {
+    if (!head) {
+        TimeNode* node = new TimeNode;
+        node->time = t;
+        node->count = 1;
+        node->nameList = nullptr;
+        insertName(node->nameList, name);
+        node->next= head;
+        return node;
+    }
 
+    if (t< head->time) {
+        TimeNode* node = new TimeNode;
+        node->time = t;
+        node->count = 1;
+        node->nameList = nullptr;
+        insertName(node->nameList, name);
+        node->next= head;
+        return node;
+    }
+    TimeNode* ptr = head;
+    TimeNode* temp = nullptr;
+    while (ptr && ptr->time<t) {
+        temp = ptr;
+        ptr=ptr->next;
+    }
+    if (ptr && ptr->time==t) {
+        ptr->count++;
+        insertName(ptr->nameList, name);
+        return head;
+    }
+    TimeNode* node = new TimeNode;
+        node->time = t;
+        node->count = 1;
+        node->nameList = nullptr;
+        insertName(node->nameList, name);
+        node->next= ptr;
+        if (temp) {
+            temp->next = node;
+        }
+        return head;
 
+}
 
 int main(int argc , char *argv[]) {
 
     ListNode*nameList = NULL;
+    TimeNode* head = NULL;
 
     for (int i = 1; i< argc; i++) {
         ifstream file(argv[i]); 
@@ -36,20 +85,25 @@ int main(int argc , char *argv[]) {
             continue;
         }
         cout << "Opened file: " << argv[i] << endl;
-        string line;
+        
         string name = argv[i];
         insertName(nameList, name);
+        double time;
+        string line;
         while (getline(file, line)) {
-            
-    cout << line<< endl;
+        double time = stod(line.substr(line.find(':') +1));
+            head = insertTime(head, time, name);
         }
-file.close();
+        file.close();
         }
-        printList(nameList);
-        cout << endl;
-    
-
-
+        TimeNode*ptr = head;
+        while (ptr ) {
+            cout << "time: " << ptr->time << " count: " << ptr->count << " names: " ;
+            printList(ptr->nameList);
+            cout<< endl;
+            ptr = ptr-> next;
+        }
+  
 
     return 0;
 }
