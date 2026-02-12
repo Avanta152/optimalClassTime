@@ -54,9 +54,23 @@ TimeNode* insertTime(TimeNode*& head, double t, string& name) {
         temp = ptr;
         ptr=ptr->next;
     }
+    //if name exists in the list
     if (ptr && ptr->time==t) {
-        ptr->count++;
+        ListNode* check = ptr->nameList;
+        bool found = false;
+        while (check) {
+            if (check->name == name) {
+                found = true;
+                break;
+            }
+            check=check->next;
+        }
+        if (!found) {
+
         insertName(ptr->nameList, name);
+
+        ptr->count++;
+        }
         return head;
     }
     TimeNode* node = new TimeNode;
